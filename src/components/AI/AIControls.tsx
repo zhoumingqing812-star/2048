@@ -42,9 +42,6 @@ export const AIControls: React.FC<AIControlsProps> = ({
         <button className="action-btn btn-secondary" onClick={onReset}>
           🔄 重新开始
         </button>
-        <button className="action-btn btn-primary btn-full" disabled>
-          📊 运行多局测试
-        </button>
       </div>
     </div>
   );
