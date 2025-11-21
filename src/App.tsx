@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Board } from './components/Game/Board';
 import { ScoreBoard } from './components/Game/ScoreBoard';
 import { AlgorithmSelector } from './components/AI/AlgorithmSelector';
@@ -9,6 +9,7 @@ import { DecisionPanel } from './components/AI/DecisionPanel';
 import { StatisticsPanel } from './components/Statistics/StatisticsPanel';
 import { useGame } from './hooks/useGame';
 import { useKeyboard } from './hooks/useKeyboard';
+import { useSwipe } from './hooks/useSwipe';
 import { useAI } from './hooks/useAI';
 import { GameMode } from './types/game';
 import { GameStatistics } from './types/statistics';
@@ -23,6 +24,7 @@ function App() {
   const [decisionCount, setDecisionCount] = useState(0);
 
   const { gameState, maxTile, handleMove, handleReset } = useGame();
+  const boardRef = useRef<HTMLDivElement>(null);
 
   const {
     isRunning: isAIRunning,
@@ -37,7 +39,10 @@ function App() {
     stop: stopAI,
   } = useAI(gameState, handleMove, aiSpeed);
 
-  useKeyboard(handleMove, gameMode === 'manual' && !isAIRunning);
+  const manualControlEnabled = gameMode === 'manual' && !isAIRunning;
+
+  useKeyboard(handleMove, manualControlEnabled);
+  useSwipe(boardRef, handleMove, manualControlEnabled);
 
   useEffect(() => {
     if (currentDecision) {
@@ -96,7 +101,7 @@ function App() {
             moves={gameState.moves}
             maxTile={maxTile}
           />
-          <Board board={gameState.board} />
+          <Board ref={boardRef} board={gameState.board} />
           <div className="game-hint">
             <strong>手动模式：</strong> 使用方向键 ↑↓←→ 进行游戏
             <br />
